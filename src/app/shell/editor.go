@@ -28,6 +28,8 @@ func (ed *minEditor) ReadCode() (string, error) {
   }
   fmt.Fprintf(ed.out, "%s> ", wd)
   line, err := ed.in.ReadString('\n')
-  line = strings.TrimRight(line, "\r\n")
+  line = strings.TrimSpace(line)
+  line = strings.TrimRight(line, "\r\n\t")
+  line = strings.TrimLeft(line, "\r\n\t")
   return line, err
 }

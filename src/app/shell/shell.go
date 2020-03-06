@@ -9,6 +9,7 @@ import (
 )
 
 var logger = util.GetLogger("[shell] ")
+
 type Shell struct {
   BinPath     string
   SockPath    string
@@ -23,20 +24,21 @@ func (sh *Shell) Main(fds [3]*os.File, args []string) int {
   defer rescue()
   //restoreTTY := term.SetupGlobal()
   //defer restoreTTY()
-
   handleSignals(fds[2])
   interact(fds)
   return 0
 }
 
 func rescue() {
-  r := recover()
-  if r != nil {
-    println()
+  if r := recover(); r != nil {
     println(r)
     print(sys.DumpStack())
-    println("\nexecing recovery shell /bin/sh")
-    syscall.Exec("/bin/sh", []string{"/bin/sh"}, os.Environ())
+    currentShell := os.Getenv("SHELL")
+    if len(currentShell) <= 0 {
+      currentShell = "/bin/sh"
+    }
+    println("\nexecing recovery shell " + currentShell)
+    _ = syscall.Exec(currentShell, []string{currentShell}, os.Environ())
   }
 }
 
