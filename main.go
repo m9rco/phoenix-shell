@@ -1,1 +1,1 @@
-src/cmd/main.go
+example/main.go
